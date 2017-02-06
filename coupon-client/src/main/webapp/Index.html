@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp" ng-controller="CouponSystemController">
+<head>
+    <title>Coupon system</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+    <script src="Jscript/ui-bootstrap-tpls-2.0.1.min.js"></script>
+    <script src="Jscript/scriptAngular.js"></script>
+    
+</head>
+<body>
+	<div id="main_wrapper" class="container">
+  		<div id="header" class="row">
+  			<div class="col-md-12">
+  				<h3>Welcome to Coupons System :)</h3>
+  			</div>
+  		</div>
+  		
+  		<div id="body" class="row">
+  			<u><h2><b>Login to Coupons System </b></h2></u>
+  			<div id="menu" class="col-md-4">
+  			
+  				<div id="login_div" ng-show="login_panel" >
+  				
+					<form id="login_form" ng-submit="submitLogin()">
+						<input ng-model="login.username"  class="form-control input-sm chat-input" id="username" name="username" type="text" placeholder="Please enter User Name" /> <br />
+						<input ng-model="login.password" class="form-control input-sm chat-input" id="password" name="password" type="password" placeholder="Please enter Password" /> <br />
+
+Type: 
+						
+						<select ng-model="login.role" id="role" name="role" > 
+							<option value="customer">Customer</option>
+							<option value="company">Company</option>
+							<option value="admin">Admin</option>
+						</select> <br />
+						</br>
+						<button id="sendLogin" name="sendLogin" type="submit" class="btn btn-default">Submit</button>
+						<img src="images\loading.gif" id="loadingGif" hidden="true" width="15px;" />
+					</form>
+				</div>
+				
+				
+				<div id="control_panel" class="panel panel-primary" ng-show="welcome_panel" >
+					<div class="panel-heading">
+   						<h3 class="panel-title">
+   							<span class="glyphicon glyphicon-user" aria-hidden="true">
+   								Panel {{user.role}}: {{user.username}}
+						</h3>
+   						 
+ 						</div>		
+ 						<div class="panel-body">	
+						<ul  ng-show="panel=='admin'" >
+							<li ng-click="getCompanies()">
+								<a href="#">Manage companies</a>
+							</li>
+							
+							<li ng-click="getCustomers()">
+								<a href="#">View all Customers</a>
+							</li>
+
+							
+						</ul>
+						<ul   ng-show="panel=='company'">
+							<li ng-click="getCoupons()" >
+								<a href="#">Manage Coupons</a>
+							</li>
+
+						</ul>
+					
+						<ul  ng-show="panel=='customer'">
+							<li  ng-click="getAvailableCoupons()">
+								<a href="#">View all available coupons</a>
+							</li>
+							<li  ng-click="getPurchasedCoupons()">
+								<a href="#">View all purchased coupons</a>
+							</li>
+							
+						</ul>
+						
+						<button id="logout" ng-click="logout()">
+							<span class="glyphicon glyphicon-chevron-left" aria-hidden="true">Logout
+						</button>
+						 
+					</div>
+ 				
+  				</div>
+			</div>
+  			<div id="content" class="col-md-8">
+  				
+  					<div id="display_companies" ng-show="company_display">
+						<table id="company_table" class="table table-bordered bg-warning">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>Company Name</th>
+									<th>Company Email</th>
+									<th>Password</th>
+									<th>Update</th>
+									<th>Delete</th>
+								</tr>
+							</thead>
+							<tbody id="company_table_body">
+								<tr ng-repeat="company in companies">
+									<td>{{company.id}}</td>
+									<td>{{company.companyName}}</td>
+									<td>{{company.email}}</td>
+									<td>{{company.password}}</td>
+									<td><input type='button' value='update' ng-click='updateCompany($index)' /></td>
+									<td><input type='button' value='delete' ng-click='deleteCompany($index)' /></td>
+								</tr>
+							</tbody>
+						</table>
+						<form ng-submit="sendCompany()">
+							<input type="hidden"  ng-value="newCompany.id" id="company_id" name="company_id" />
+							<table>
+								<tr>
+									<td>Company name:</td>
+									<td><input ng-model="newCompany.companyName" ng-disabled="savedProperty" id="company_name" name="company_name" /></td>
+								</tr>
+								<tr>
+									<td>Company email:</td>
+									<td><input  ng-model="newCompany.email"  id="company_email" name="company_email"/></td>
+								</tr>
+								<tr>
+									<td>Company password:</td> 
+									<td><input ng-model="newCompany.password" id="company_password" name="company_password" /></td>
+								</tr>
+								<tr>
+									<td colspan="2" id="company_table_button">
+										<button id="sendCompany">{{submitCation}}</button>
+										<input type="button" id="sendCompany" ng-click="resetCompany()" value="Cancel" />
+									</td>
+								</tr>
+							</table>
+						</form>
+					</div>
+					
+					<div id="display_customers" ng-show="customer_display">
+						<table id="customers_table" class="table table-bordered bg-warning">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>User Name</th>
+									<th>Password</th>
+									<th>Update</th>
+									<th>Delete</th>
+								</tr>
+							</thead>
+							<tbody id="customers_table_body">
+								<tr ng-repeat="customer in customers">
+									<td >{{customer.id}}</td>
+									<td >{{customer.custName}}</td>
+									<td>{{customer.password}}</td>
+									<td><input type='button' value='update' ng-click='updateCustomer($index)' /></td>
+									<td><input type='button' value='delete' ng-click='deleteCustomer($index)' /></td>
+								</tr>
+							</tbody>
+						</table>
+						<form ng-submit="sendCustomer()">
+							<input type="hidden"  ng-value="newCustomer.id" id="customer_id" name="customer_id" />
+							<table>
+								<tr>
+									<td>Customer name:</td>
+									<td><input ng-model="newCustomer.custName" ng-disabled="savedProperty" id="customer_name" name="customer_name" /></td>
+								</tr>
+								<tr>
+									<td>Customer password:</td> 
+									<td><input ng-model="newCustomer.password" id="customer_passowrd" name="customer_passowrd" /></td>
+								</tr>
+								<tr>
+									<td colspan="2" id="company_table_button">
+										<button id="createCustomer">{{submitCation}}</button>
+										<input type="button" id="sendCustomer" ng-click="resetCustomer()" value="Cancel" />
+									</td>
+								</tr>
+							</table>
+						</form>
+					</div>
+					
+					
+					
+					
+					
+					<div id="display_coupons" ng-show="coupons_display">
+						filter by coupon type:
+						<select ng-model="filterByTypeSelect" id="filterByType" name="filterByType">
+							<option>RESTURANS</option>
+							<option>ELECTRICITY</option>
+							<option>FOOD</option>
+							<option>HEALTH</option>
+							<option>SPORTS</option>
+							<option>CAMPING</option>
+							<option>TRAVELING</option>
+						</select> <button class="btn btn-default" ng-click="filterByType()"> filter</button> <br />
+						
+						filter by price: <input ng-model="filterByPriceText"><button class="btn btn-default" ng-click="filterByPrice()"> filter</button> <br />
+						filter by date: <input type="date" ng-model="filterByDateDate" /><button class="btn btn-default" ng-click="filterByDate()"> filter</button> <br />
+						<table id="coupons_table" class="table table-bordered bg-warning">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>Title</th>
+									<th>Start Date</th>
+									<th>End Date</th>
+									<th>Amount</th>
+									<th>Type</th>
+									<th>Message</th>
+									<th>Price</th>
+									<th>Image</th>
+									<th>Update</th>
+									<th>Delete</th>
+								</tr>
+							</thead>
+							<tbody id="coupons_table_body">
+								<tr ng-repeat="coupon in coupons">
+									<td >{{coupon.id}}</td>
+									<td >{{coupon.title}}</td>
+									<td>{{coupon.startDate | date:'dd-MM-yyyy'}}</td>
+									<td>{{coupon.endDate | date:'dd-MM-yyyy'}}</td>
+									<td>{{coupon.amount}}</td>
+									<td>{{coupon.type}}</td>
+									<td>{{coupon.message}}</td>
+									<td>{{coupon.price}}</td>
+									<td>{{coupon.image}}</td>
+									<td><input type='button' value='update' ng-click='updateCoupon($index)' /></td>
+									<td><input type='button' value='delete' ng-click='deleteCoupon($index)' /></td>
+								</tr>
+							</tbody>
+						</table>
+						<form ng-submit="sendCoupon()">
+							<input type="hidden"  ng-value="newCoupon.id" id="newCoupon_id" name="newCoupon_id" />
+							<table>
+								<tr>
+									<td>Coupon title:</td>
+									<td><input ng-model="newCoupon.title" ng-disabled="savedProperty" id="newCoupon_title" name="newCoupon_title" /></td>
+								</tr>
+								<tr>
+									<td>Coupon Start date:</td> 
+									<td><input ng-model="newCoupon.startDate" ng-disabled="savedProperty"  type="date" id="newCoupon_startDate" name="newCoupon_startDate" /></td>
+								</tr>
+								<tr>
+									<td>Coupon End date:</td> 
+									<td><input ng-model="newCoupon.endDate"  type="date" id="newCoupon_endDate" name="newCoupon_endDate" /></td>
+								</tr>
+								<tr>
+									<td>Coupon amount:</td>
+									<td><input ng-model="newCoupon.amount" ng-disabled="savedProperty" id="newCoupon_amount" name="newCoupon_amount" /></td>
+								</tr>
+								<tr>
+									<td>Coupon type:</td>
+									<td>
+										<select ng-model="newCoupon.type" ng-disabled="savedProperty" id="newCoupon_type" name="newCoupon_type">
+											<option>RESTURANS</option>
+											<option>ELECTRICITY</option>
+											<option>FOOD</option>
+											<option>HEALTH</option>
+											<option>SPORTS</option>
+											<option>CAMPING</option>
+											<option>TRAVELING</option>
+										</select> 
+									</td>
+								</tr>
+								<tr>
+									<td>Coupon message:</td>
+									<td><textarea ng-model="newCoupon.message" ng-disabled="savedProperty"  rows="4" cols="50"  id="newCoupon_message" name="newCoupon_message"></textarea></td>
+								</tr>
+								<tr>
+									<td>Coupon price:</td>
+									<td><input ng-model="newCoupon.price" id="newCoupon_price" name="newCoupon_price" /></td>
+								</tr>
+								<tr>
+									<td>Coupon picture:</td>
+									<td>
+										<select ng-model="newCoupon.image" ng-disabled="savedProperty" id="newCoupon_image" name="newCoupon_image">
+											<option value="RESTURANS.jpg">RESTURANS</option>
+											<option value="ELECTRICITY.jpg">ELECTRICITY</option>
+											<option value="FOOD.jpg">FOOD</option>
+											<option value="HEALTH.jpg">HEALTH</option>
+											<option value="SPORTS.jpg">SPORTS</option>
+											<option value="CAMPING.jpg">CAMPING</option>
+											<option value="TRAVELING.jpg">TRAVELING</option>
+										</select>
+										<img ng-src="images\{{newCoupon.image}}" class="img-responsive" id="img_preview" />
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2" id="coupon_table_button">
+										<button id="createCoupon">{{submitCation}}</button>
+										<input type="button" id="sendCoupon" ng-click="resetCoupon()" value="Cancel" />
+									</td>
+								</tr>
+							</table>
+						</form>
+					</div>
+					<div id="display_coupons" ng-show="coupons_display_designed">
+						<div ng-show="!buyCoupons">
+							filter by price: <input ng-model="custFilterByPriceText"><input type="button" class="btn btn-default" ng-click="custFilterByPrice()" value="filter" /><br />
+							filter by Type: 
+								<select ng-model="custFilterByTypeSelect">
+											<option>RESTURANS</option>
+											<option>ELECTRICITY</option>
+											<option>FOOD</option>
+											<option>HEALTH</option>
+											<option>SPORTS</option>
+											<option>CAMPING</option>
+											<option>TRAVELING</option>
+										</select> 
+										<input type="button" class="btn btn-default" ng-click="custFilterByType()" value="filter" /><br />
+								<input type="button" class="btn btn-warning" ng-click="getPurchasedCoupons()" value="reset" />
+						
+						</div>
+						<article ng-repeat="coupon in coupons"  class="row">
+							<div class="col-md-4">
+								<img ng-src="images\{{coupon.image}}" class="img-responsive img-rounded" />
+							</div>
+							<div class="coupon_content col-md-6" >
+								<header>
+									<hgroup>
+										<h1>{{coupon.title}}</h1>
+									</hgroup>
+								</header>
+								<p>{{coupon.message}}</p>
+								<p>price: {{coupon.price}}</p>
+								<p>{{coupon.startDate | date:'dd-MM-yyyy'}} - {{coupon.endDate | date:'dd-MM-yyyy'}}</p>
+								<p>Type: {{coupon.type}} Amount left: {{coupon.amount}}</p>
+							</div>
+							<div class="col-md-2">
+								<input type="button" ng-click="purchaseCoupon($index)" ng-show="buyCoupons" value="Purchase" />
+							</div>
+						</article>
+					</div>
+				
+  			</div>
+  		</div>
+	</div>
+	
+
+</body>
+</html>

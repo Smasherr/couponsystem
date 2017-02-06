@@ -1,0 +1,43 @@
+@CHARSET "windows-1255";
+
+#main_wrapper {
+ border: 3px  ;
+ padding-right: 10px;
+    padding-bottom: 6px;
+    padding-left: 10px;
+	background-image:  url("images/brickwall.png");
+	   border-radius: 3px;
+}
+
+#body {
+	   border-radius: 3px;
+	padding: 50px;
+	font-family: "Times New Roman", Georgia, Serif;	
+	color:	#000000;
+}
+
+#header {
+	
+  
+        border-radius: 3px;
+	font-family: "Times New Roman", Georgia, Serif;
+	text-align: center;
+	background: 					#8080ff;
+}
+
+#login_form {
+	background: 				#8080ff;
+	padding: 15px;
+	   border-radius: 3px;
+}
+#content {
+	
+}
+
+#login_div {
+	padding: 20px;
+}
+
+#img_preview {
+	width: 400px;
+}
